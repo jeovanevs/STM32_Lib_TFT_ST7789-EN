@@ -90,6 +90,7 @@ extern C {
 		//==  выбираем дисплей: =======================================================
 		//-- нужное оставляем другое коментируем ( важно должно быть только один выбран )---------
 		
+		//#define	ST7789_IS_76X284		// 2.25" 76 x 284 ST7789 
 		//#define	ST7789_IS_135X240		// 1.14" 135 x 240 ST7789 
 		#define	ST7789_IS_240X240		// 1.3" 240 x 240 ST7789 
 		//#define	ST7789_IS_172X320		// 1.47" 172 x 320 ST7789 
@@ -173,11 +174,32 @@ extern uint16_t ST7789_Y_Start;
 	#define ST7789_XSTART 			0
 	#define ST7789_YSTART 			0
 	#define ST7789_ROTATION 		(ST7789_MADCTL_RGB)
+	#define ST7789_INVERSION 		ST7789_INVON
 	
 #endif
 	
 //##############################################################################
 
+//##############################################################################
+
+//###  параметры дисплея 2.25" 76 x 284 ST7789 ###################################
+
+	// 2.25" 76 x 284 ST7789  display, default orientation
+
+#ifdef ST7789_IS_76X284
+
+	#define ST7789_WIDTH  			76
+	#define ST7789_HEIGHT 			284
+	#define ST7789_XSTART 			82
+	#define ST7789_YSTART 			18
+	#define ST7789_ROTATION 		(ST7789_MADCTL_RGB)
+	#define ST7789_INVERSION 		ST7789_INVOFF
+	
+#endif
+	
+//##############################################################################
+
+//##############################################################################
 
 //###  параметры дисплея 1.14" 135 x 240 ST7789 ###################################
 
@@ -190,6 +212,7 @@ extern uint16_t ST7789_Y_Start;
 	#define ST7789_XSTART 			52
 	#define ST7789_YSTART 			40
 	#define ST7789_ROTATION 		(ST7789_MADCTL_RGB)
+	#define ST7789_INVERSION 		ST7789_INVON
 	
 #endif
 	
@@ -210,6 +233,7 @@ extern uint16_t ST7789_Y_Start;
 	#define ST7789_XSTART 			0
 	#define ST7789_YSTART 			34
 	#define ST7789_ROTATION 		(ST7789_MADCTL_MX | ST7789_MADCTL_MV | ST7789_MADCTL_RGB)
+	#define ST7789_INVERSION 		ST7789_INVON
 	
 #endif
 	
@@ -230,6 +254,7 @@ extern uint16_t ST7789_Y_Start;
 	#define ST7789_XSTART 			0
 	#define ST7789_YSTART 			20
 	#define ST7789_ROTATION 		(ST7789_MADCTL_RGB)
+	#define ST7789_INVERSION 		ST7789_INVON
 	
 #endif
 
@@ -250,6 +275,7 @@ extern uint16_t ST7789_Y_Start;
 	#define ST7789_XSTART 			0
 	#define ST7789_YSTART 			0
 	#define ST7789_ROTATION 		(ST7789_MADCTL_RGB)
+	#define ST7789_INVERSION 		ST7789_INVON
 	
 #endif
 	

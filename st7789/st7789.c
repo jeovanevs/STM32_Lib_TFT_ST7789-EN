@@ -58,7 +58,7 @@ static const uint8_t init_cmds[] = {
 		ST7789_RASET  , 4,                 	// 6: Row addr set, 4 args, no delay:
 		  ST7789_YSTART>>8,ST7789_YSTART&0xff,  //    YSTART = 0>>8, 0&0xff,
 		  (ST7789_HEIGHT-1)>>8,(ST7789_HEIGHT-1)&0xff,  //    YEND = (320-1)>>8,(320-1)&0xff,
-		ST7789_INVON ,   DELAY,     		// 7: Inversion ON
+		ST7789_INVERSION ,   DELAY,     		// 7: Inversion ON
 		  10,
 		ST7789_NORON  ,   DELAY,    		// 8: Normal display on, no args, w/delay
 		  10,                              	// 10 ms delay
@@ -1479,6 +1479,17 @@ void ST7789_rotation( uint8_t rotation ){
 	  switch (rotation) {
 		
 		case 1:
+			//== 2.25" 76 x 284 ST7789 =================================================
+			#ifdef ST7789_IS_76X284
+				ST7789_SendData(ST7789_MADCTL_RGB);
+				ST7789_Width = 76;
+				ST7789_Height = 284;
+				ST7789_X_Start = 82;
+				ST7789_Y_Start = 18;
+				ST7789_FillScreen(0);
+			#endif
+			//==========================================================================
+		
 			//== 1.13" 135 x 240 ST7789 =================================================
 			#ifdef ST7789_IS_135X240
 				ST7789_SendData(ST7789_MADCTL_RGB);
@@ -1536,6 +1547,17 @@ void ST7789_rotation( uint8_t rotation ){
 		 break;
 		
 		case 2:
+			//== 2.25" 76 x 284 ST7789 =================================================
+			#ifdef ST7789_IS_76X284
+				ST7789_SendData(ST7789_MADCTL_MX | ST7789_MADCTL_MV | ST7789_MADCTL_RGB);
+				ST7789_Width = 284;
+				ST7789_Height = 76;
+				ST7789_X_Start = 18;
+				ST7789_Y_Start = 82;
+				ST7789_FillScreen(0);
+			#endif
+			//==========================================================================
+		
 			//== 1.13" 135 x 240 ST7789 =================================================
 			#ifdef ST7789_IS_135X240
 				ST7789_SendData(ST7789_MADCTL_MX | ST7789_MADCTL_MV | ST7789_MADCTL_RGB);
@@ -1593,6 +1615,17 @@ void ST7789_rotation( uint8_t rotation ){
 		 break;
 		
 	   case 3:
+			 //== 2.25" 76 x 284 ST7789 =================================================
+			#ifdef ST7789_IS_76X284
+				ST7789_SendData(ST7789_MADCTL_MX | ST7789_MADCTL_MY | ST7789_MADCTL_RGB);
+				ST7789_Width = 76;
+				ST7789_Height = 284;
+				ST7789_X_Start = 82;
+				ST7789_Y_Start = 18;
+				ST7789_FillScreen(0);
+			#endif
+			//==========================================================================
+		 
 		   //== 1.13" 135 x 240 ST7789 =================================================
 			#ifdef ST7789_IS_135X240
 				ST7789_SendData(ST7789_MADCTL_MX | ST7789_MADCTL_MY | ST7789_MADCTL_RGB);
@@ -1651,6 +1684,17 @@ void ST7789_rotation( uint8_t rotation ){
 		 break;
 	   
 	   case 4:
+			 //== 2.25" 76 x 284 ST7789 =================================================
+			#ifdef ST7789_IS_76X284
+				ST7789_SendData(ST7789_MADCTL_MY | ST7789_MADCTL_MV | ST7789_MADCTL_RGB);
+				ST7789_Width = 284;
+				ST7789_Height = 76;
+				ST7789_X_Start = 18;
+				ST7789_Y_Start = 82;
+				ST7789_FillScreen(0);
+			#endif
+			//==========================================================================
+		 
 		   //== 1.13" 135 x 240 ST7789 =================================================
 			#ifdef ST7789_IS_135X240
 				ST7789_SendData(ST7789_MADCTL_MY | ST7789_MADCTL_MV | ST7789_MADCTL_RGB);
