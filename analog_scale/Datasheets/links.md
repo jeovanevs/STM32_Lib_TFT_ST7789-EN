@@ -1,0 +1,2 @@
+1. [https://www.buydisplay.com/spi-tft-2-25-lcd-76x284-display-module-st7789-breakout-board-for-arduino-raspberry-pi](https://www.buydisplay.com/spi-tft-2-25-lcd-76x284-display-module-st7789-breakout-board-for-arduino-raspberry-pi)
+2. https://www.lcdwiki.com/Main_Page
