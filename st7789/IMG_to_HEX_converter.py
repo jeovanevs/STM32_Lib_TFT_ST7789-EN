@@ -1,17 +1,17 @@
 ﻿#!/usr/bin/env python
 
-#	Цветное изображение конвертируем спомощью файла IMG_to_HEX_converter.py
-#	запускаем командную строку CMD
-#   устанавливаем если нет модуль Image -> pip3 install image
-#	кидаем фаил IMG_to_HEX_converter.py и картинку в одну папку
-#	потом в командной строке переходим в эту папку и пишем:
-#	> python   IMG_to_HEX_converter.py   (имя файла)logo.jpg    (ширина)85    (высота)80
+#	Convert a color image using the IMG_to_HEX_converter.py file
+#	start the CMD command line
+#   install the Image module if it's missing -> pip3 install image
+#	place IMG_to_HEX_converter.py and the image in the same folder
+#	then, in the command line, go to that folder and run:
+#	> python   IMG_to_HEX_converter.py   (file_name)logo.jpg    (width)85    (height)80
 #
-#	например:    D:\IMG>python  IMG_to_HEX_converter.py  logo.jpg  85  80
+#	example:    D:\IMG>python  IMG_to_HEX_converter.py  logo.jpg  85  80
 #
-#	и в этой же папке пояаиться фаил с нашим массивом picFile.txt
+#	and in the same folder a file with our array picFile.txt will appear
 #
-#	ГЕНЕРИРУЕТ В ФОРМАТЕ   RGB565 ( 16bit )
+#	GENERATES DATA IN   RGB565 (16-bit) FORMAT
 
 
 from PIL import Image
@@ -35,7 +35,7 @@ print("<height> " + str(H))
 
 img = Image.open(fname)
 if img.width != int(W) or img.height != int(H):
-    print("Error: Разрешение указано не верно ( должно совпадать с картинкой )!!!");
+    print("Error: Resolution is incorrect (it must match the image dimensions)!!!");
     sys.exit(2)
 	
 f=open("picFile.txt", "a")
@@ -56,4 +56,4 @@ for y in range(0, img.height):
 
 f.write("}; \r\n")
 f.close()
-print("\r\n Готово !!! OK \r\n")
+print("\r\n Done !!! OK \r\n")

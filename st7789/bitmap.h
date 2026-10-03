@@ -1,7 +1,7 @@
 /*
  * bitmap.h
  
- Онлайн генератор картинок при генерайии ставим галочку Invert image colors
+ Online image generator: enable the "Invert image colors" option during generation
  
  Online generator https://javl.github.io/image2cpp/
  
@@ -10,7 +10,7 @@
 #ifndef BITMAP_H_
 #define BITMAP_H_
 
-// данный логотип расширением 128 на 27
+// this logo is 128x27
 
 const unsigned char logo[]=
 {
@@ -50,17 +50,17 @@ const unsigned char logo[]=
 //################################################################################################################################################
 /*
 
-	Цветное изображение конвертируем спомощью файла IMG_to_HEX_converter.py
-	запускаем командную строку CMD
-	кидаем фаил IMG_to_HEX_converter.py и картинку в одну папку
-	потом в командной строке переходим в эту папку и пишем:
-	> python   IMG_to_HEX_converter.py   (имя файла)logo.jpg    (ширина)85    (высота)53
+	Convert the color image using IMG_to_HEX_converter.py
+	run the command prompt (CMD)
+	place IMG_to_HEX_converter.py and the image in the same folder
+	then switch to that folder in the command line and run:
+	> python   IMG_to_HEX_converter.py   (file name)logo.jpg    (width)85    (height)53
 
-	например:    D:\IMG>python  IMG_to_HEX_converter.py  logo.jpg  85  53
+	for example:    D:\IMG>python  IMG_to_HEX_converter.py  logo.jpg  85  53
 
-	и в этой же папке пояаиться фаил с нашим массивом picFile.txt
+	and in the same folder a file with our array, picFile.txt, will appear
 
-	ГЕНЕРИРУЕТ В ФОРМАТЕ   RGB565 ( 16bit )
+	GENERATES DATA IN   RGB565 (16-bit) FORMAT
 
 */
 

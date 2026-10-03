@@ -1,10 +1,10 @@
 /*
 
   ******************************************************************************
-  * @file 			( фаил ):   ST7789.c
-  * @brief 		( описание ):  	
+  * @file 			( file ):   ST7789.c
+  * @brief 		( description ):  	
   ******************************************************************************
-  * @attention 	( внимание ):	 author: Golinskiy Konstantin	e-mail: golinskiy.konstantin@gmail.com
+  * @attention 	( attention ):	 author: Golinskiy Konstantin	e-mail: golinskiy.konstantin@gmail.com
   ******************************************************************************
   
 */
@@ -19,7 +19,7 @@ uint16_t ST7789_Width = 0;
 uint16_t ST7789_Height = 0;
 
 #if FRAME_BUFFER
-// массив буфер кадра
+// frame buffer array
 	uint16_t buff_frame[ST7789_WIDTH*ST7789_HEIGHT] = { 0x0000, };
 #endif
 
@@ -37,10 +37,10 @@ static void SwapInt16Values(int16_t *pValue1, int16_t *pValue2);
 static void ST7789_DrawLine_Slow(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color);
 
 
-//==== данные для инициализации дисплея ST7789_240X320 ==========
+//==== initialization data for the ST7789_240X320 display ==========
 
-// инициализация для всех дисплеев одна, так как драйвер расчитан на максимальный размер 240x320
-// для подгона пор свой размер двигаем в функции ротации дисплея
+// the initialization is the same for all displays because the driver is designed for a maximum size of 240x320
+// to adjust it to your size, modify the display size in the rotation function
 static const uint8_t init_cmds[] = {
 		9,                       			// 9 commands in list:
 		ST7789_SWRESET,   DELAY,    		// 1: Software reset, no args, w/delay
@@ -78,12 +78,12 @@ static const uint8_t init_cmds[] = {
 	  
 	  
 //==============================================================================
-// Процедура инициализации дисплея
+// Display initialization procedure
 //==============================================================================
 void ST7789_Init(void){
 	
-	// Задержка после подачи питания
-	// если при старте не всегда запускаеться дисплей увеличиваем время задержки
+	// Power-up delay
+	// if the display does not always start reliably, increase this delay
 	HAL_Delay(200);	
 	
 	ST7789_Width = ST7789_WIDTH;
@@ -105,19 +105,19 @@ void ST7789_Init(void){
 
 
 //==============================================================================
-// Процедура управления SPI
+// SPI control procedure
 //==============================================================================
 static void ST7789_Select(void) {
 	
     #ifdef CS_PORT
 	
-			//-- если захотим переделать под HAL ------------------	
+			//-- if we want to switch to HAL ------------------	
 			#ifdef ST7789_SPI_HAL
 				HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_RESET);
 			#endif
 			//-----------------------------------------------------
 			
-			//-- если захотим переделать под CMSIS  ---------------
+			//-- if we want to switch to CMSIS  ---------------
 			#ifdef ST7789_SPI_CMSIS
 				CS_GPIO_Port->BSRR = ( CS_Pin << 16 );
 			#endif
@@ -129,19 +129,19 @@ static void ST7789_Select(void) {
 
 
 //==============================================================================
-// Процедура управления SPI
+// SPI control procedure
 //==============================================================================
 static void ST7789_Unselect(void) {
 	
     #ifdef CS_PORT
 	
-			//-- если захотим переделать под HAL ------------------	
+			//-- if we want to switch to HAL ------------------	
 			#ifdef ST7789_SPI_HAL
 				HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_SET);
 			#endif
 			//-----------------------------------------------------
 			
-			//-- если захотим переделать под CMSIS  ---------------
+			//-- if we want to switch to CMSIS  ---------------
 			#ifdef ST7789_SPI_CMSIS
 					 CS_GPIO_Port->BSRR = CS_Pin;
 			#endif
@@ -154,7 +154,7 @@ static void ST7789_Unselect(void) {
 
 
 //==============================================================================
-// Процедура отправки данных для инициализации дисплея
+// Procedure for sending initialization data to the display
 //==============================================================================
 static void ST7789_ExecuteCommandList(const uint8_t *addr) {
 	
@@ -186,7 +186,7 @@ static void ST7789_ExecuteCommandList(const uint8_t *addr) {
 
 
 //==============================================================================
-// Процедура вывода цветного изображения на дисплей
+// Procedure for displaying a color image on the screen
 //==============================================================================
 void ST7789_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint16_t* data) {
 	
@@ -202,14 +202,14 @@ void ST7789_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint
 		return;
 	}
 	
-#if FRAME_BUFFER	// если включен буфер кадра
+#if FRAME_BUFFER	// if frame buffering is enabled
 		for( uint16_t i = 0; i < h; i++ ){
 			for( uint16_t j = 0; j < w; j++ ){
 				buff_frame[( y + i ) * ST7789_Width + x + j] = *data;
 				data++;
 			}
 		}
-#else	//если попиксельный вывод
+#else	// if pixel-by-pixel output
     ST7789_SetWindow(x, y, x+w-1, y+h-1);
 	
 		ST7789_Select();
@@ -223,7 +223,7 @@ void ST7789_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint
 
 
 //==============================================================================
-// Процедура аппаратного сброса дисплея (ножкой RESET)
+// Hardware reset procedure for the display (using the RESET pin)
 //==============================================================================
 void ST7789_HardReset(void){
 
@@ -236,11 +236,11 @@ void ST7789_HardReset(void){
 
 
 //==============================================================================
-// Процедура отправки команды в дисплей
+// Procedure for sending a command to the display
 //==============================================================================
 __inline static void ST7789_SendCmd(uint8_t Cmd){	
 		
-	//-- если захотим переделать под HAL ------------------	
+	//-- if we want to switch to HAL ------------------	
 	#ifdef ST7789_SPI_HAL
 	
 		 // pin DC LOW
@@ -255,7 +255,7 @@ __inline static void ST7789_SendCmd(uint8_t Cmd){
 	#endif
 	//-----------------------------------------------------
 	
-	//-- если захотим переделать под CMSIS  ---------------------------------------------
+	//-- if we want to switch to CMSIS  ---------------------------------------------
 	#ifdef ST7789_SPI_CMSIS
 		
 		// pin DC LOW
@@ -271,17 +271,17 @@ __inline static void ST7789_SendCmd(uint8_t Cmd){
 				SET_BIT(ST7789_SPI_CMSIS->CR1, SPI_CR1_SPE);	// ST7789_SPI_CMSIS->CR1 |= SPI_CR1_SPE;
 			}
 			
-			// Ждем, пока не освободится буфер передатчика
-			// TXE(Transmit buffer empty) – устанавливается когда буфер передачи(регистр SPI_DR) пуст, очищается при загрузке данных
+			// Wait until the transmit buffer is free
+			// TXE(Transmit buffer empty) – is set when the transmit buffer (SPI_DR register) is empty and cleared when data is loaded
 			while( (ST7789_SPI_CMSIS->SR & SPI_SR_TXE) == RESET ){};	
 			
-			// заполняем буфер передатчика 1 байт информации--------------
+			// fill the transmit buffer with 1 byte of data --------------
 			*((__IO uint8_t *)&ST7789_SPI_CMSIS->DR) = Cmd;
 			
-			// TXE(Transmit buffer empty) – устанавливается когда буфер передачи(регистр SPI_DR) пуст, очищается при загрузке данных
+			// TXE(Transmit buffer empty) – is set when the transmit buffer (SPI_DR register) is empty and cleared when data is loaded
 			while( (ST7789_SPI_CMSIS->SR & (SPI_SR_TXE | SPI_SR_BSY)) != SPI_SR_TXE ){};
 				
-			//Ждем, пока SPI освободится от предыдущей передачи
+			// Wait until the SPI is free from the previous transfer
 			//while((ST7789_SPI_CMSIS->SR&SPI_SR_BSY)){};	
 
 			// Disable SPI	
@@ -302,13 +302,13 @@ __inline static void ST7789_SendCmd(uint8_t Cmd){
 			
 			SET_BIT(ST7789_SPI_CMSIS->CR1, SPI_CR1_CSTART);	// ST7789_SPI_CMSIS->CR1 |= SPI_CR1_CSTART;
 			
-			// ждем пока SPI будет свободна------------
+			// wait until the SPI is free ------------
 			//while (!(ST7789_SPI_CMSIS->SR & SPI_SR_TXP)){};		
 		
-			// передаем 1 байт информации--------------
+			// send 1 byte of data --------------
 			*((__IO uint8_t *)&ST7789_SPI_CMSIS->TXDR )  = Cmd;
 				
-			// Ждать завершения передачи---------------
+			// Wait for transmission to finish ---------------
 			while (!( ST7789_SPI_CMSIS -> SR & SPI_SR_TXC )){};
 			
 			// Disable SPI	
@@ -327,11 +327,11 @@ __inline static void ST7789_SendCmd(uint8_t Cmd){
 
 
 //==============================================================================
-// Процедура отправки данных (параметров) в дисплей 1 BYTE
+// Procedure for sending a display parameter (1 byte)
 //==============================================================================
 __inline static void ST7789_SendData(uint8_t Data ){
 	
-	//-- если захотим переделать под HAL ------------------
+	//-- if we want to switch to HAL ------------------
 	#ifdef ST7789_SPI_HAL
 	
 		HAL_SPI_Transmit(&ST7789_SPI_HAL, &Data, 1, HAL_MAX_DELAY);
@@ -341,7 +341,7 @@ __inline static void ST7789_SendData(uint8_t Data ){
 	//-----------------------------------------------------
 	
 	
-	//-- если захотим переделать под CMSIS  ---------------------------------------------
+	//-- if we want to switch to CMSIS  ---------------------------------------------
 	#ifdef ST7789_SPI_CMSIS
 		
 		//======  FOR F-SERIES ===========================================================
@@ -354,17 +354,17 @@ __inline static void ST7789_SendData(uint8_t Data ){
 				SET_BIT(ST7789_SPI_CMSIS->CR1, SPI_CR1_SPE);	// ST7789_SPI_CMSIS->CR1 |= SPI_CR1_SPE;
 			}
 
-			// Ждем, пока не освободится буфер передатчика
-			// TXE(Transmit buffer empty) – устанавливается когда буфер передачи(регистр SPI_DR) пуст, очищается при загрузке данных
+			// Wait until the transmit buffer is free
+			// TXE(Transmit buffer empty) – is set when the transmit buffer (SPI_DR register) is empty and cleared when data is loaded
 			while( (ST7789_SPI_CMSIS->SR & SPI_SR_TXE) == RESET ){};
 		
-			// передаем 1 байт информации--------------
+			// send 1 byte of data --------------
 			*((__IO uint8_t *)&ST7789_SPI_CMSIS->DR) = Data;
 
-			// TXE(Transmit buffer empty) – устанавливается когда буфер передачи(регистр SPI_DR) пуст, очищается при загрузке данных
+			// TXE(Transmit buffer empty) – is set when the transmit buffer (SPI_DR register) is empty and cleared when data is loaded
 			while( (ST7789_SPI_CMSIS->SR & (SPI_SR_TXE | SPI_SR_BSY)) != SPI_SR_TXE ){};
 
-			// Ждем, пока не освободится буфер передатчика
+			// Wait until the transmit buffer is free
 			//while((ST7789_SPI_CMSIS->SR&SPI_SR_BSY)){};	
 			
 			// Disable SPI	
@@ -384,13 +384,13 @@ __inline static void ST7789_SendData(uint8_t Data ){
 
 			SET_BIT(ST7789_SPI_CMSIS->CR1, SPI_CR1_CSTART);	// ST7789_SPI_CMSIS->CR1 |= SPI_CR1_CSTART;
 			
-			// ждем пока SPI будет свободна------------
+			// wait until the SPI is free ------------
 			//while (!(ST7789_SPI_CMSIS->SR & SPI_SR_TXP)){};		
 		
-			// передаем 1 байт информации--------------
+			// send 1 byte of data --------------
 			*((__IO uint8_t *)&ST7789_SPI_CMSIS->TXDR )  = Data;
 				
-			// Ждать завершения передачи---------------
+			// Wait for transmission to finish ---------------
 			while (!( ST7789_SPI_CMSIS -> SR & SPI_SR_TXC )){};
 			
 			// Disable SPI	
@@ -406,11 +406,11 @@ __inline static void ST7789_SendData(uint8_t Data ){
 
 
 //==============================================================================
-// Процедура отправки данных (параметров) в дисплей MASS
+// Procedure for sending display parameters in bulk (MASS)
 //==============================================================================
 __inline static void ST7789_SendDataMASS(uint8_t* buff, size_t buff_size){
 	
-	//-- если захотим переделать под HAL ------------------
+	//-- if we want to switch to HAL ------------------
 	#ifdef ST7789_SPI_HAL
 		
 		if( buff_size <= 0xFFFF ){
@@ -431,7 +431,7 @@ __inline static void ST7789_SendDataMASS(uint8_t* buff, size_t buff_size){
 	//-----------------------------------------------------
 	
 	
-	//-- если захотим переделать под CMSIS  ---------------------------------------------
+	//-- if we want to switch to CMSIS  ---------------------------------------------
 	#ifdef ST7789_SPI_CMSIS	
 
 		//======  FOR F-SERIES ===========================================================
@@ -446,20 +446,20 @@ __inline static void ST7789_SendDataMASS(uint8_t* buff, size_t buff_size){
 			
 			while( buff_size ){
 				
-			// Ждем, пока не освободится буфер передатчика
-			// TXE(Transmit buffer empty) – устанавливается когда буфер передачи(регистр SPI_DR) пуст, очищается при загрузке данных
+			// Wait until the transmit buffer is free
+			// TXE(Transmit buffer empty) – is set when the transmit buffer (SPI_DR register) is empty and cleared when data is loaded
 			while( (ST7789_SPI_CMSIS->SR & SPI_SR_TXE) == RESET ){};
 					
-				// передаем 1 байт информации--------------
+				// send 1 byte of data --------------
 				*((__IO uint8_t *)&ST7789_SPI_CMSIS->DR) = *buff++;
 
 				buff_size--;
 			}
 			
-			// TXE(Transmit buffer empty) – устанавливается когда буфер передачи(регистр SPI_DR) пуст, очищается при загрузке данных
+			// TXE(Transmit buffer empty) – is set when the transmit buffer (SPI_DR register) is empty and cleared when data is loaded
 			while( (ST7789_SPI_CMSIS->SR & (SPI_SR_TXE | SPI_SR_BSY)) != SPI_SR_TXE ){};
 				
-			// Ждем, пока не освободится буфер передатчика
+			// Wait until the transmit buffer is free
 			// while((ST7789_SPI_CMSIS->SR&SPI_SR_BSY)){};
 				
 			// Disable SPI	
@@ -479,15 +479,15 @@ __inline static void ST7789_SendDataMASS(uint8_t* buff, size_t buff_size){
 
 			SET_BIT(ST7789_SPI_CMSIS->CR1, SPI_CR1_CSTART);	// ST7789_SPI_CMSIS->CR1 |= SPI_CR1_CSTART;
 			
-			// ждем пока SPI будет свободна------------
+			// wait until the SPI is free ------------
 			//while (!(ST7789_SPI_CMSIS->SR & SPI_SR_TXP)){};		
 			
 			while( buff_size ){
 		
-				// передаем 1 байт информации--------------
+				// send 1 byte of data --------------
 				*((__IO uint8_t *)&ST7789_SPI_CMSIS->TXDR )  = *buff++;
 				
-				// Ждать завершения передачи---------------
+				// Wait for transmission to finish ---------------
 				while (!( ST7789_SPI_CMSIS -> SR & SPI_SR_TXC )){};
 
 				buff_size--;
@@ -507,7 +507,7 @@ __inline static void ST7789_SendDataMASS(uint8_t* buff, size_t buff_size){
 
 
 //==============================================================================
-// Процедура включения режима сна
+// Procedure to enter sleep mode
 //==============================================================================
 void ST7789_SleepModeEnter( void ){
 	
@@ -523,7 +523,7 @@ void ST7789_SleepModeEnter( void ){
 
 
 //==============================================================================
-// Процедура отключения режима сна
+// Procedure to exit sleep mode
 //==============================================================================
 void ST7789_SleepModeExit( void ){
 	
@@ -539,7 +539,7 @@ void ST7789_SleepModeExit( void ){
 
 
 //==============================================================================
-// Процедура включения/отключения режима частичного заполнения экрана
+// Procedure to enable/disable partial-screen inversion mode
 //==============================================================================
 void ST7789_InversionMode(uint8_t Mode){
 	
@@ -558,7 +558,7 @@ void ST7789_InversionMode(uint8_t Mode){
 
 
 //==============================================================================
-// Процедура закрашивает экран цветом color
+// Fills the screen with the given color
 //==============================================================================
 void ST7789_FillScreen(uint16_t color){
 	
@@ -568,7 +568,7 @@ void ST7789_FillScreen(uint16_t color){
 
 
 //==============================================================================
-// Процедура очистки экрана - закрашивает экран цветом черный
+// Screen clear procedure - fills the screen with black
 //==============================================================================
 void ST7789_Clear(void){
 	
@@ -578,7 +578,7 @@ void ST7789_Clear(void){
 
 
 //==============================================================================
-// Процедура заполнения прямоугольника цветом color
+// Fills a rectangle with the specified color
 //==============================================================================
 void ST7789_FillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color){
 	
@@ -594,7 +594,7 @@ void ST7789_FillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color)
 	  h = ST7789_Height - y;
   }
   
-#if FRAME_BUFFER	// если включен буфер кадра
+#if FRAME_BUFFER	// if the frame buffer is enabled
 	if( x >=0 && y >=0 ){
 		for( uint16_t i = 0; i < h; i++ ){
 			for( uint16_t j = 0; j < w; j++ ){
@@ -602,7 +602,7 @@ void ST7789_FillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color)
 			}
 		}
 	}
-#else	//если попиксельный вывод
+#else	// if per-pixel output is enabled
   ST7789_SetWindow(x, y, x + w - 1, y + h - 1);
 		
   ST7789_RamWrite(&color, (h * w));
@@ -612,7 +612,7 @@ void ST7789_FillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color)
 
 
 //==============================================================================
-// Процедура установка границ экрана для заполнения
+// Sets the screen boundaries for filling
 //==============================================================================
 static void ST7789_SetWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1){
 	
@@ -631,7 +631,7 @@ static void ST7789_SetWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
 
 
 //==============================================================================
-// Процедура записи данных в дисплей
+// Writes data to the display
 //==============================================================================
 static void ST7789_RamWrite(uint16_t *pBuff, uint32_t Len){
 	
@@ -651,7 +651,7 @@ static void ST7789_RamWrite(uint16_t *pBuff, uint32_t Len){
 
 
 //==============================================================================
-// Процедура установки начального и конечного адресов колонок
+// Procedure to set the start and end column addresses
 //==============================================================================
 static void ST7789_ColumnSet(uint16_t ColumnStart, uint16_t ColumnEnd){
 	
@@ -677,7 +677,7 @@ static void ST7789_ColumnSet(uint16_t ColumnStart, uint16_t ColumnEnd){
 
 
 //==============================================================================
-// Процедура установки начального и конечного адресов строк
+// Procedure to set the start and end row addresses
 //==============================================================================
 static void ST7789_RowSet(uint16_t RowStart, uint16_t RowEnd){
 	
@@ -703,7 +703,7 @@ static void ST7789_RowSet(uint16_t RowStart, uint16_t RowEnd){
 
 
 //==============================================================================
-// Процедура управления подсветкой (ШИМ)
+// Backlight control procedure (PWM)
 //==============================================================================
 void ST7789_SetBL(uint8_t Value){
 	
@@ -717,7 +717,7 @@ void ST7789_SetBL(uint8_t Value){
 
 
 //==============================================================================
-// Процедура включения/отключения питания дисплея
+// Turn the display power on/off
 //==============================================================================
 void ST7789_DisplayPower(uint8_t On){
 	
@@ -736,7 +736,7 @@ void ST7789_DisplayPower(uint8_t On){
 
 
 //==============================================================================
-// Процедура рисования прямоугольника ( пустотелый )
+// Procedure for drawing a rectangle (outline)
 //==============================================================================
 void ST7789_DrawRectangle(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color) {
 	
@@ -750,7 +750,7 @@ void ST7789_DrawRectangle(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16
 
 
 //==============================================================================
-// Процедура вспомогательная для --- Процедура рисования прямоугольника ( заполненый )
+// Helper for --- Rectangle drawing procedure (filled)
 //==============================================================================
 static void SwapInt16Values(int16_t *pValue1, int16_t *pValue2){
 	
@@ -762,7 +762,7 @@ static void SwapInt16Values(int16_t *pValue1, int16_t *pValue2){
 
 
 //==============================================================================
-// Процедура рисования прямоугольника ( заполненый )
+// Procedure for drawing a rectangle (filled)
 //==============================================================================
 void ST7789_DrawRectangleFilled(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t fillcolor) {
 	
@@ -780,7 +780,7 @@ void ST7789_DrawRectangleFilled(int16_t x1, int16_t y1, int16_t x2, int16_t y2, 
 
 
 //==============================================================================
-// Процедура вспомогательная для --- Процедура рисования линии
+// Helper for --- line drawing procedure
 //==============================================================================
 static void ST7789_DrawLine_Slow(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color) {
 	
@@ -814,7 +814,7 @@ static void ST7789_DrawLine_Slow(int16_t x1, int16_t y1, int16_t x2, int16_t y2,
 
 
 //==============================================================================
-// Процедура рисования линии
+// Line drawing procedure
 //==============================================================================
 void ST7789_DrawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color) {
 
@@ -848,23 +848,23 @@ void ST7789_DrawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t co
 
 
 //==============================================================================
-// Процедура рисования линии с указаным углом и длиной
+// Procedure for drawing a line at a specified angle and length
 //==============================================================================
 void ST7789_DrawLineWithAngle(int16_t x, int16_t y, uint16_t length, double angle_degrees, uint16_t color) {
-    // Преобразование угла в радианы
+    // Convert angle to radians
     double angle_radians = (360.0 - angle_degrees) * PI / 180.0;
 
-    // Вычисление конечных координат
+    // Calculate end coordinates
     int16_t x2 = x + length * cos(angle_radians) + 0.5;
     int16_t y2 = y + length * sin(angle_radians) + 0.5;
 
-    // Используем существующую функцию для рисования линии
+    // Use the existing line drawing function
     ST7789_DrawLine(x, y, x2, y2, color);
 }
 //==============================================================================
 
 //==============================================================================
-// Процедура рисования треугольника ( пустотелый )
+// Procedure for drawing a triangle (outline)
 //==============================================================================
 void ST7789_DrawTriangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3, uint16_t color){
 	/* Draw lines */
@@ -876,7 +876,7 @@ void ST7789_DrawTriangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uin
 
 
 //==============================================================================
-// Процедура рисования треугольника ( заполненый )
+// Procedure for drawing a triangle (filled)
 //==============================================================================
 void ST7789_DrawFilledTriangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3, uint16_t color){
 	
@@ -941,7 +941,7 @@ void ST7789_DrawFilledTriangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y
 
 
 //==============================================================================
-// Процедура окрашивает 1 пиксель дисплея
+// Procedure for painting one display pixel
 //==============================================================================
 void ST7789_DrawPixel(int16_t x, int16_t y, uint16_t color){
 	
@@ -949,9 +949,9 @@ void ST7789_DrawPixel(int16_t x, int16_t y, uint16_t color){
     return;
   }
 	
-#if FRAME_BUFFER	// если включен буфер кадра
+#if FRAME_BUFFER	// if the frame buffer is enabled
 	buff_frame[y * ST7789_Width + x] = ((color & 0xFF)<<8) | (color >> 8 );
-#else	//если попиксельный вывод
+#else	// if per-pixel output is enabled
   ST7789_SetWindow(x, y, x, y);
   ST7789_RamWrite(&color, 1);
 #endif
@@ -960,7 +960,7 @@ void ST7789_DrawPixel(int16_t x, int16_t y, uint16_t color){
 
 
 //==============================================================================
-// Процедура рисования круг ( заполненый )
+// Procedure for drawing a circle (filled)
 //==============================================================================
 void ST7789_DrawCircleFilled(int16_t x0, int16_t y0, int16_t radius, uint16_t fillcolor) {
 	
@@ -1000,7 +1000,7 @@ void ST7789_DrawCircleFilled(int16_t x0, int16_t y0, int16_t radius, uint16_t fi
 
 
 //==============================================================================
-// Процедура рисования круг ( пустотелый )
+// Procedure for drawing a circle (outline)
 //==============================================================================
 void ST7789_DrawCircle(int16_t x0, int16_t y0, int16_t radius, uint16_t color) {
 	
@@ -1042,7 +1042,7 @@ void ST7789_DrawCircle(int16_t x0, int16_t y0, int16_t radius, uint16_t color) {
 
 
 //==============================================================================
-// рисуем элипс
+// draw an ellipse
 //==============================================================================
 void ST7789_DrawEllipse(int16_t x0, int16_t y0, int16_t radiusX, int16_t radiusY, uint16_t color) {
     int x, y;
@@ -1056,7 +1056,7 @@ void ST7789_DrawEllipse(int16_t x0, int16_t y0, int16_t radiusX, int16_t radiusY
 
 
 //==============================================================================
-// рисуем элипс под указаным углом наклона
+// draw an ellipse at a specified rotation angle
 //==============================================================================
 void ST7789_DrawEllipseWithAngle(int16_t x0, int16_t y0, int16_t radiusX, int16_t radiusY, float angle_degrees, uint16_t color) {
     float cosAngle = cos((360.0 - angle_degrees) * PI / 180);
@@ -1077,7 +1077,7 @@ void ST7789_DrawEllipseWithAngle(int16_t x0, int16_t y0, int16_t radiusX, int16_
 
 
 //==============================================================================
-// рисуем элипс закрашенный
+// draw a filled ellipse
 //==============================================================================
 void ST7789_DrawEllipseFilled(int16_t x0, int16_t y0, int16_t radiusX, int16_t radiusY, uint16_t color) {
 	int x, y;
@@ -1094,7 +1094,7 @@ void ST7789_DrawEllipseFilled(int16_t x0, int16_t y0, int16_t radiusX, int16_t r
 
 
 //==============================================================================
-// рисуем элипс закрашенный под указаным углом наклона
+// draw a filled ellipse at a specified rotation angle
 //==============================================================================
 void ST7789_DrawEllipseFilledWithAngle(int16_t x0, int16_t y0, int16_t radiusX, int16_t radiusY, float angle_degrees, uint16_t color) {
    float cosAngle = cos((360.0 - angle_degrees) * PI / 180.0);
@@ -1115,7 +1115,7 @@ void ST7789_DrawEllipseFilledWithAngle(int16_t x0, int16_t y0, int16_t radiusX, 
 
 
 //==============================================================================
-// Процедура рисования символа ( 1 буква или знак )
+// Procedure for drawing a character (one letter or symbol)
 //==============================================================================
 void ST7789_DrawChar(uint16_t x, uint16_t y, uint16_t TextColor, uint16_t BgColor, uint8_t TransparentBg, FontDef_t* Font, uint8_t multiplier, unsigned char ch){
 	
@@ -1141,47 +1141,47 @@ void ST7789_DrawChar(uint16_t x, uint16_t y, uint16_t TextColor, uint16_t BgColo
 				}
 				
 				else if( (uint8_t) ch > 191 ){
-					// +96 это так как латинские символы и знаки в шрифтах занимают 96 позиций
-					// и если в шрифте который содержит сперва латиницу и спец символы и потом 
-					// только кирилицу то нужно добавлять 95 если шрифт 
-					// содержит только кирилицу то +96 не нужно
+					// +96 because Latin letters and symbols occupy 96 positions in the fonts
+					// and if the font contains Latin letters and special characters first, 
+					// followed by Cyrillic only, then you need to add 95; if the font 
+					// contains only Cyrillic, then +96 is not needed
 					b = Font->data[((ch - 192) + 96) * Font->FontHeight + i];
 				}
 				
-				else if( (uint8_t) ch == 168 ){	// 168 символ по ASCII - Ё
-					// 160 эллемент ( символ Ё ) 
+				else if( (uint8_t) ch == 168 ){	// 168 symbol in ASCII - Yo
+					// 160 element (symbol Yo) 
 					b = Font->data[( 160 ) * Font->FontHeight + i];
 				}
 				
-				else if( (uint8_t) ch == 184 ){	// 184 символ по ASCII - ё
-					// 161 эллемент  ( символ ё ) 
+				else if( (uint8_t) ch == 184 ){	// 184 symbol in ASCII - yo
+					// 161 element (symbol yo) 
 					b = Font->data[( 161 ) * Font->FontHeight + i];
 				}
 				//-------------------------------------------------------------------
 				
-				//----  Украинская раскладка ----------------------------------------------------
-				else if( (uint8_t) ch == 170 ){	// 168 символ по ASCII - Є
-					// 162 эллемент ( символ Є )
+				//----  Ukrainian layout ----------------------------------------------------
+				else if( (uint8_t) ch == 170 ){	// 168 symbol in ASCII - Ye
+					// 162 element (symbol Ye)
 					b = Font->data[( 162 ) * Font->FontHeight + i];
 				}
-				else if( (uint8_t) ch == 175 ){	// 184 символ по ASCII - Ї
-					// 163 эллемент  ( символ Ї )
+				else if( (uint8_t) ch == 175 ){	// 184 symbol in ASCII - Yi
+					// 163 element (symbol Yi)
 					b = Font->data[( 163 ) * Font->FontHeight + i];
 				}
-				else if( (uint8_t) ch == 178 ){	// 168 символ по ASCII - І
-					// 164 эллемент ( символ І )
+				else if( (uint8_t) ch == 178 ){	// 168 symbol in ASCII - I
+					// 164 element (symbol I)
 					b = Font->data[( 164 ) * Font->FontHeight + i];
 				}
-				else if( (uint8_t) ch == 179 ){	// 184 символ по ASCII - і
-					// 165 эллемент  ( символ і )
+				else if( (uint8_t) ch == 179 ){	// 184 symbol in ASCII - i
+					// 165 element (symbol i)
 					b = Font->data[( 165 ) * Font->FontHeight + i];
 				}
-				else if( (uint8_t) ch == 186 ){	// 184 символ по ASCII - є
-					// 166 эллемент  ( символ є )
+				else if( (uint8_t) ch == 186 ){	// 184 symbol in ASCII - ye
+					// 166 element (symbol ye)
 					b = Font->data[( 166 ) * Font->FontHeight + i];
 				}
-				else if( (uint8_t) ch == 191 ){	// 168 символ по ASCII - ї
-					// 167 эллемент ( символ ї )
+				else if( (uint8_t) ch == 191 ){	// 168 symbol in ASCII - yi
+					// 167 element (symbol yi)
 					b = Font->data[( 167 ) * Font->FontHeight + i];
 				}
 				//-----------------------------------------------------------------------------
@@ -1217,7 +1217,7 @@ void ST7789_DrawChar(uint16_t x, uint16_t y, uint16_t TextColor, uint16_t BgColo
 
 
 //==============================================================================
-// Процедура рисования строки
+// Procedure for drawing a string
 //==============================================================================
 void ST7789_print(uint16_t x, uint16_t y, uint16_t TextColor, uint16_t BgColor, uint8_t TransparentBg, FontDef_t* Font, uint8_t multiplier, char *str){	
 	
@@ -1232,39 +1232,39 @@ void ST7789_print(uint16_t x, uint16_t y, uint16_t TextColor, uint16_t BgColor, 
 	while (len--) {
 		
 		//---------------------------------------------------------------------
-		// проверка на кириллицу UTF-8, если латиница то пропускаем if
-		// Расширенные символы ASCII Win-1251 кириллица (код символа 128-255)
-		// проверяем первый байт из двух ( так как UTF-8 ето два байта )
-		// если он больше либо равен 0xC0 ( первый байт в кириллеце будет равен 0xD0 либо 0xD1 именно в алфавите )
-		if ( (uint8_t)*str >= 0xC0 ){	// код 0xC0 соответствует символу кириллица 'A' по ASCII Win-1251
+		// check for Cyrillic UTF-8; if Latin letters are used, skip this block
+		// extended Win-1251 ASCII Cyrillic characters (code 128-255)
+		// check the first byte out of two (since UTF-8 is two bytes)
+		// if it is greater than or equal to 0xC0 (the first byte in Cyrillic will be 0xD0 or 0xD1 in the alphabet)
+		if ( (uint8_t)*str >= 0xC0 ){	// code 0xC0 corresponds to the Cyrillic letter 'A' in Win-1251 ASCII
 			
-			// проверяем какой именно байт первый 0xD0 либо 0xD1---------------------------------------------
+			// check which byte is first: 0xD0 or 0xD1---------------------------------------------
 			switch ((uint8_t)*str) {
 				case 0xD0: {
-					// увеличиваем массив так как нам нужен второй байт
+					// advance the pointer because we need the second byte
 					str++;
-					// проверяем второй байт там сам символ
-					if ((uint8_t)*str >= 0x90 && (uint8_t)*str <= 0xBF){ buff_char = (*str) + 0x30; }	// байт символов А...Я а...п  делаем здвиг на +48
-					else if ((uint8_t)*str == 0x81) { buff_char = 0xA8; break; }		// байт символа Ё ( если нужнф еще символы добавляем тут и в функции DrawChar() )
-					else if ((uint8_t)*str == 0x84) { buff_char = 0xAA; break; }		// байт символа Є ( если нужнф еще символы добавляем тут и в функции DrawChar() )
-					else if ((uint8_t)*str == 0x86) { buff_char = 0xB2; break; }		// байт символа І ( если нужнф еще символы добавляем тут и в функции DrawChar() )
-					else if ((uint8_t)*str == 0x87) { buff_char = 0xAF; break; }		// байт символа Ї ( если нужнф еще символы добавляем тут и в функции DrawChar() )
+					// check the second byte to get the actual character
+					if ((uint8_t)*str >= 0x90 && (uint8_t)*str <= 0xBF){ buff_char = (*str) + 0x30; }	// byte of characters A...Ya...p shift by +48
+					else if ((uint8_t)*str == 0x81) { buff_char = 0xA8; break; }		// byte of the Yo symbol (add more symbols here if needed, and in DrawChar())
+					else if ((uint8_t)*str == 0x84) { buff_char = 0xAA; break; }		// byte of the Ye symbol (add more symbols here if needed, and in DrawChar())
+					else if ((uint8_t)*str == 0x86) { buff_char = 0xB2; break; }		// byte of the I symbol (add more symbols here if needed, and in DrawChar())
+					else if ((uint8_t)*str == 0x87) { buff_char = 0xAF; break; }		// byte of the Yi symbol (add more symbols here if needed, and in DrawChar())
 					break;
 				}
 				case 0xD1: {
-					// увеличиваем массив так как нам нужен второй байт
+					// advance the pointer because we need the second byte
 					str++;
-					// проверяем второй байт там сам символ
-					if ((uint8_t)*str >= 0x80 && (uint8_t)*str <= 0x8F){ buff_char = (*str) + 0x70; }	// байт символов п...я	елаем здвиг на +112
-					else if ((uint8_t)*str == 0x91) { buff_char = 0xB8; break; }		// байт символа ё ( если нужнф еще символы добавляем тут и в функции DrawChar() )
-					else if ((uint8_t)*str == 0x94) { buff_char = 0xBA; break; }		// байт символа є ( если нужнф еще символы добавляем тут и в функции DrawChar() )
-					else if ((uint8_t)*str == 0x96) { buff_char = 0xB3; break; }		// байт символа і ( если нужнф еще символы добавляем тут и в функции DrawChar() )
-					else if ((uint8_t)*str == 0x97) { buff_char = 0xBF; break; }		// байт символа ї ( если нужнф еще символы добавляем тут и в функции DrawChar() )
+					// check the second byte to get the actual character
+					if ((uint8_t)*str >= 0x80 && (uint8_t)*str <= 0x8F){ buff_char = (*str) + 0x70; }	// byte of characters p...ya shift by +112
+					else if ((uint8_t)*str == 0x91) { buff_char = 0xB8; break; }		// byte of the yo symbol (add more symbols here if needed, and in DrawChar())
+					else if ((uint8_t)*str == 0x94) { buff_char = 0xBA; break; }		// byte of the ye symbol (add more symbols here if needed, and in DrawChar())
+					else if ((uint8_t)*str == 0x96) { buff_char = 0xB3; break; }		// byte of the i symbol (add more symbols here if needed, and in DrawChar())
+					else if ((uint8_t)*str == 0x97) { buff_char = 0xBF; break; }		// byte of the yi symbol (add more symbols here if needed, and in DrawChar())
 					break;
 				}
 			}
 			//------------------------------------------------------------------------------------------------
-			// уменьшаем еще переменную так как израсходывали 2 байта для кириллицы
+			// decrement the counter again because we consumed 2 bytes for Cyrillic
 			len--;
 			
 			ST7789_DrawChar(x, y, TextColor, BgColor, TransparentBg, Font, multiplier, buff_char);
@@ -1283,7 +1283,7 @@ void ST7789_print(uint16_t x, uint16_t y, uint16_t TextColor, uint16_t BgColor, 
 
 
 //==============================================================================
-// Процедура рисования символа с указаным углом ( 1 буква или знак )
+// Procedure for drawing a character at a specified angle (one letter or symbol)
 //==============================================================================
 void ST7789_DrawCharWithAngle(uint16_t x, uint16_t y, uint16_t TextColor, uint16_t BgColor, uint8_t TransparentBg, FontDef_t* Font, uint8_t multiplier, double angle_degrees, unsigned char ch){
 	
@@ -1293,14 +1293,14 @@ void ST7789_DrawCharWithAngle(uint16_t x, uint16_t y, uint16_t TextColor, uint16
 	
 	uint8_t xx, yy;
 	
-	// Преобразуем угол в радианы
+	// Convert the angle to radians
 	double radians = (360.0 - angle_degrees) * PI / 180.0;
 
-	// Вычисляем матрицу поворота
+	// Calculate the rotation matrix
 	double cosTheta = cos(radians);
 	double sinTheta = sin(radians);
 
-	// Переменные для преобразованных координат
+	// Variables for transformed coordinates
 	double newX, newY;
 	
 	if( multiplier < 1 ){
@@ -1318,54 +1318,54 @@ void ST7789_DrawCharWithAngle(uint16_t x, uint16_t y, uint16_t TextColor, uint16
 				}
 				
 				else if( (uint8_t) ch > 191 ){
-					// +96 это так как латинские символы и знаки в шрифтах занимают 96 позиций
-					// и если в шрифте который содержит сперва латиницу и спец символы и потом 
-					// только кирилицу то нужно добавлять 95 если шрифт 
-					// содержит только кирилицу то +96 не нужно
+					// +96 because Latin letters and symbols occupy 96 positions in the fonts
+					// and if the font contains Latin letters and special characters first, 
+					// followed by Cyrillic only, then you need to add 95; if the font 
+					// contains only Cyrillic, then +96 is not needed
 					b = Font->data[((ch - 192) + 96) * Font->FontHeight + i];
 				}
 				
-				else if( (uint8_t) ch == 168 ){	// 168 символ по ASCII - Ё
-					// 160 эллемент ( символ Ё ) 
+				else if( (uint8_t) ch == 168 ){	// 168 symbol in ASCII - Yo
+					// 160 element (symbol Yo) 
 					b = Font->data[( 160 ) * Font->FontHeight + i];
 				}
 				
-				else if( (uint8_t) ch == 184 ){	// 184 символ по ASCII - ё
-					// 161 эллемент  ( символ ё ) 
+				else if( (uint8_t) ch == 184 ){	// 184 symbol in ASCII - yo
+					// 161 element (symbol yo) 
 					b = Font->data[( 161 ) * Font->FontHeight + i];
 				}
 				//-------------------------------------------------------------------
 				
-				//----  Украинская раскладка ----------------------------------------------------
-				else if( (uint8_t) ch == 170 ){	// 168 символ по ASCII - Є
-					// 162 эллемент ( символ Є )
+				//----  Ukrainian layout ----------------------------------------------------
+				else if( (uint8_t) ch == 170 ){	// 168 symbol in ASCII - Ye
+					// 162 element (symbol Ye)
 					b = Font->data[( 162 ) * Font->FontHeight + i];
 				}
-				else if( (uint8_t) ch == 175 ){	// 184 символ по ASCII - Ї
-					// 163 эллемент  ( символ Ї )
+				else if( (uint8_t) ch == 175 ){	// 184 symbol in ASCII - Yi
+					// 163 element (symbol Yi)
 					b = Font->data[( 163 ) * Font->FontHeight + i];
 				}
-				else if( (uint8_t) ch == 178 ){	// 168 символ по ASCII - І
-					// 164 эллемент ( символ І )
+				else if( (uint8_t) ch == 178 ){	// 168 symbol in ASCII - I
+					// 164 element (symbol I)
 					b = Font->data[( 164 ) * Font->FontHeight + i];
 				}
-				else if( (uint8_t) ch == 179 ){	// 184 символ по ASCII - і
-					// 165 эллемент  ( символ і )
+				else if( (uint8_t) ch == 179 ){	// 184 symbol in ASCII - i
+					// 165 element (symbol i)
 					b = Font->data[( 165 ) * Font->FontHeight + i];
 				}
-				else if( (uint8_t) ch == 186 ){	// 184 символ по ASCII - є
-					// 166 эллемент  ( символ є )
+				else if( (uint8_t) ch == 186 ){	// 184 symbol in ASCII - ye
+					// 166 element (symbol ye)
 					b = Font->data[( 166 ) * Font->FontHeight + i];
 				}
-				else if( (uint8_t) ch == 191 ){	// 168 символ по ASCII - ї
-					// 167 эллемент ( символ ї )
+				else if( (uint8_t) ch == 191 ){	// 168 symbol in ASCII - yi
+					// 167 element (symbol yi)
 					b = Font->data[( 167 ) * Font->FontHeight + i];
 				}
 				//-----------------------------------------------------------------------------
 			
 				for (j = 0; j < Font->FontWidth; j++) {
 					if ((b << j) & 0x8000) {
-							// Применяем поворот к координатам
+							// Apply the rotation to the coordinates
 							newX = cosTheta * (X - x) - sinTheta * (Y - y) + x;
 							newY = sinTheta * (X - x) + cosTheta * (Y - y) + y;
 
@@ -1375,7 +1375,7 @@ void ST7789_DrawCharWithAngle(uint16_t x, uint16_t y, uint16_t TextColor, uint16
 									}
 							}
 					} else if (TransparentBg) {
-							// Аналогично для фона
+							// Likewise for the background
 							newX = cosTheta * (X - x) - sinTheta * (Y - y) + x + 0.5;
 							newY = sinTheta * (X - x) + cosTheta * (Y - y) + y + 0.5;
 
@@ -1396,7 +1396,7 @@ void ST7789_DrawCharWithAngle(uint16_t x, uint16_t y, uint16_t TextColor, uint16
 
 
 //==============================================================================
-// Процедура рисования строки с указаным углом
+// Procedure for drawing a string at a specified angle
 //==============================================================================
 void ST7789_printWithAngle(uint16_t x, uint16_t y, uint16_t TextColor, uint16_t BgColor, uint8_t TransparentBg, FontDef_t* Font, uint8_t multiplier, double angle_degrees, char *str){	
 	
@@ -1411,39 +1411,39 @@ void ST7789_printWithAngle(uint16_t x, uint16_t y, uint16_t TextColor, uint16_t 
 	while (len--) {
 		
 		//---------------------------------------------------------------------
-		// проверка на кириллицу UTF-8, если латиница то пропускаем if
-		// Расширенные символы ASCII Win-1251 кириллица (код символа 128-255)
-		// проверяем первый байт из двух ( так как UTF-8 ето два байта )
-		// если он больше либо равен 0xC0 ( первый байт в кириллеце будет равен 0xD0 либо 0xD1 именно в алфавите )
-		if ( (uint8_t)*str >= 0xC0 ){	// код 0xC0 соответствует символу кириллица 'A' по ASCII Win-1251
+		// check for Cyrillic UTF-8; if Latin letters are used, skip this block
+		// extended Win-1251 ASCII Cyrillic characters (code 128-255)
+		// check the first byte out of two (since UTF-8 is two bytes)
+		// if it is greater than or equal to 0xC0 (the first byte in Cyrillic will be 0xD0 or 0xD1 in the alphabet)
+		if ( (uint8_t)*str >= 0xC0 ){	// code 0xC0 corresponds to the Cyrillic letter 'A' in Win-1251 ASCII
 			
-			// проверяем какой именно байт первый 0xD0 либо 0xD1---------------------------------------------
+			// check which byte is first: 0xD0 or 0xD1---------------------------------------------
 			switch ((uint8_t)*str) {
 				case 0xD0: {
-					// увеличиваем массив так как нам нужен второй байт
+					// advance the pointer because we need the second byte
 					str++;
-					// проверяем второй байт там сам символ
-					if ((uint8_t)*str >= 0x90 && (uint8_t)*str <= 0xBF){ buff_char = (*str) + 0x30; }	// байт символов А...Я а...п  делаем здвиг на +48
-					else if ((uint8_t)*str == 0x81) { buff_char = 0xA8; break; }		// байт символа Ё ( если нужнф еще символы добавляем тут и в функции DrawChar() )
-					else if ((uint8_t)*str == 0x84) { buff_char = 0xAA; break; }		// байт символа Є ( если нужнф еще символы добавляем тут и в функции DrawChar() )
-					else if ((uint8_t)*str == 0x86) { buff_char = 0xB2; break; }		// байт символа І ( если нужнф еще символы добавляем тут и в функции DrawChar() )
-					else if ((uint8_t)*str == 0x87) { buff_char = 0xAF; break; }		// байт символа Ї ( если нужнф еще символы добавляем тут и в функции DrawChar() )
+					// check the second byte to get the actual character
+					if ((uint8_t)*str >= 0x90 && (uint8_t)*str <= 0xBF){ buff_char = (*str) + 0x30; }	// byte of characters A...Ya...p shift by +48
+					else if ((uint8_t)*str == 0x81) { buff_char = 0xA8; break; }		// byte of the Yo symbol (add more symbols here if needed, and in DrawChar())
+					else if ((uint8_t)*str == 0x84) { buff_char = 0xAA; break; }		// byte of the Ye symbol (add more symbols here if needed, and in DrawChar())
+					else if ((uint8_t)*str == 0x86) { buff_char = 0xB2; break; }		// byte of the I symbol (add more symbols here if needed, and in DrawChar())
+					else if ((uint8_t)*str == 0x87) { buff_char = 0xAF; break; }		// byte of the Yi symbol (add more symbols here if needed, and in DrawChar())
 					break;
 				}
 				case 0xD1: {
-					// увеличиваем массив так как нам нужен второй байт
+					// advance the pointer because we need the second byte
 					str++;
-					// проверяем второй байт там сам символ
-					if ((uint8_t)*str >= 0x80 && (uint8_t)*str <= 0x8F){ buff_char = (*str) + 0x70; }	// байт символов п...я	елаем здвиг на +112
-					else if ((uint8_t)*str == 0x91) { buff_char = 0xB8; break; }		// байт символа ё ( если нужнф еще символы добавляем тут и в функции DrawChar() )
-					else if ((uint8_t)*str == 0x94) { buff_char = 0xBA; break; }		// байт символа є ( если нужнф еще символы добавляем тут и в функции DrawChar() )
-					else if ((uint8_t)*str == 0x96) { buff_char = 0xB3; break; }		// байт символа і ( если нужнф еще символы добавляем тут и в функции DrawChar() )
-					else if ((uint8_t)*str == 0x97) { buff_char = 0xBF; break; }		// байт символа ї ( если нужнф еще символы добавляем тут и в функции DrawChar() )
+					// check the second byte to get the actual character
+					if ((uint8_t)*str >= 0x80 && (uint8_t)*str <= 0x8F){ buff_char = (*str) + 0x70; }	// byte of characters p...ya shift by +112
+					else if ((uint8_t)*str == 0x91) { buff_char = 0xB8; break; }		// byte of the yo symbol (add more symbols here if needed, and in DrawChar())
+					else if ((uint8_t)*str == 0x94) { buff_char = 0xBA; break; }		// byte of the ye symbol (add more symbols here if needed, and in DrawChar())
+					else if ((uint8_t)*str == 0x96) { buff_char = 0xB3; break; }		// byte of the i symbol (add more symbols here if needed, and in DrawChar())
+					else if ((uint8_t)*str == 0x97) { buff_char = 0xBF; break; }		// byte of the yi symbol (add more symbols here if needed, and in DrawChar())
 					break;
 				}
 			}
 			//------------------------------------------------------------------------------------------------
-			// уменьшаем еще переменную так как израсходывали 2 байта для кириллицы
+			// decrement the counter again because we consumed 2 bytes for Cyrillic
 			len--;
 			
 			ST7789_DrawCharWithAngle(x, y, TextColor, BgColor, TransparentBg, Font, multiplier, angle_degrees, buff_char);
@@ -1452,7 +1452,7 @@ void ST7789_printWithAngle(uint16_t x, uint16_t y, uint16_t TextColor, uint16_t 
 		else{
 			ST7789_DrawCharWithAngle(x, y, TextColor, BgColor, TransparentBg, Font, multiplier, angle_degrees, *str);
 		}
-		// Смещаем начальные координаты с каждым символом с учетом угла
+		// Move the initial coordinates for each character taking the angle into account
     x += (Font->FontWidth * multiplier * cos((360.0 - angle_degrees) * PI / 180.0) + 0.5);
     y += (Font->FontWidth * multiplier * sin((360.0 - angle_degrees) * PI / 180.0) + 0.5);
 
@@ -1464,17 +1464,17 @@ void ST7789_printWithAngle(uint16_t x, uint16_t y, uint16_t TextColor, uint16_t 
 
 
 //==============================================================================
-// Процедура ротации ( положение ) дисплея
+// Display rotation (orientation) procedure
 //==============================================================================
-// па умолчанию 1 режим ( всего 1, 2, 3, 4 )
+// default mode is 1 (there are 1, 2, 3, 4 total)
 void ST7789_rotation( uint8_t rotation ){
 	
 	ST7789_Select();
 	
 	ST7789_SendCmd(ST7789_MADCTL);
 
-	// длайвер расчитан на экран 320 х 240 (  максимальный размер )
-	// для подгона под любой другой нужно отнимать разницу пикселей
+	// the driver is designed for a 320x240 display (maximum size)
+	// to fit any other size, subtract the pixel difference
 
 	  switch (rotation) {
 		
@@ -1761,7 +1761,7 @@ void ST7789_rotation( uint8_t rotation ){
 
 
 //==============================================================================
-// Процедура рисования иконки монохромной
+// Procedure for drawing a monochrome icon
 //==============================================================================
 void ST7789_DrawBitmap(int16_t x, int16_t y, const unsigned char* bitmap, int16_t w, int16_t h, uint16_t color){
 
@@ -1789,42 +1789,42 @@ void ST7789_DrawBitmap(int16_t x, int16_t y, const unsigned char* bitmap, int16_
 
 
 //==============================================================================
-// Процедура рисования иконки монохромной с указаным углом
+// Procedure for drawing a monochrome icon at a specified angle
 //==============================================================================
 void ST7789_DrawBitmapWithAngle(int16_t x, int16_t y, const unsigned char* bitmap, int16_t w, int16_t h, uint16_t color, double angle_degrees) {
-    // Преобразование угла в радианы
+    // Convert angle to radians
     double angle_radians = (360.0 - angle_degrees) * PI / 180.0;
 
-    // Вычисление матрицы поворота
+    // Calculate the rotation matrix
     double cosTheta = cos(angle_radians);
     double sinTheta = sin(angle_radians);
 
-    // Ширина и высота повернутого изображения
+    // Width and height of the rotated image
     int16_t rotatedW = round(fabs(w * cosTheta) + fabs(h * sinTheta));
     int16_t rotatedH = round(fabs(h * cosTheta) + fabs(w * sinTheta));
 
-    // Вычисление центральных координат повернутого изображения
+    // Calculate the center coordinates of the rotated image
     int16_t centerX = x + w / 2;
     int16_t centerY = y + h / 2;
 
-    // Проходим по каждому пикселю изображения и рисуем его повернутым
+    // Move through each pixel of the image and draw it rotated
     for (int16_t j = 0; j < h; j++) {
         for (int16_t i = 0; i < w; i++) {
-            // Вычисление смещения от центра
+            // Calculate the offset from the center
             int16_t offsetX = i - w / 2;
             int16_t offsetY = j - h / 2;
 
-            // Применение матрицы поворота
+            // Apply the rotation matrix
             int16_t rotatedX = round(centerX + offsetX * cosTheta - offsetY * sinTheta);
             int16_t rotatedY = round(centerY + offsetX * sinTheta + offsetY * cosTheta);
 
-            // Проверка находится ли пиксель в пределах экрана
+            // Check whether the pixel is within the screen bounds
             if (rotatedX >= 0 && rotatedX < ST7789_Width && rotatedY >= 0 && rotatedY < ST7789_Height) {
-                // Получение цвета пикселя из исходного изображения
+                // Get the pixel color from the source image
                 uint8_t byteWidth = (w + 7) / 8;
                 uint8_t byte = (*(const unsigned char*)(&bitmap[j * byteWidth + i / 8]));
                 if (byte & (0x80 >> (i & 7))) {
-                    // Рисование пикселя на экране
+                    // Draw the pixel on the screen
                     ST7789_DrawPixel(rotatedX, rotatedY, color);
                 }
             }
@@ -1835,7 +1835,7 @@ void ST7789_DrawBitmapWithAngle(int16_t x, int16_t y, const unsigned char* bitma
 
 
 //==============================================================================
-// Процедура рисования прямоугольник с закругленніми краями ( заполненый )
+// Procedure for drawing a rounded rectangle (filled)
 //==============================================================================
 void ST7789_DrawFillRoundRect(int16_t x, int16_t y, uint16_t width, uint16_t height, int16_t cornerRadius, uint16_t color) {
 	
@@ -1852,7 +1852,7 @@ void ST7789_DrawFillRoundRect(int16_t x, int16_t y, uint16_t width, uint16_t hei
 //==============================================================================
 
 //==============================================================================
-// Процедура рисования половины окружности ( правая или левая ) ( заполненый )
+// Procedure for drawing a half-circle (right or left) (filled)
 //==============================================================================
 void ST7789_DrawFillCircleHelper(int16_t x0, int16_t y0, int16_t r, uint8_t corners, int16_t delta, uint16_t color) {
 
@@ -1899,7 +1899,7 @@ void ST7789_DrawFillCircleHelper(int16_t x0, int16_t y0, int16_t r, uint8_t corn
 //==============================================================================																		
 
 //==============================================================================
-// Процедура рисования четверти окружности (закругление, дуга) ( ширина 1 пиксель)
+// Procedure for drawing a quarter-circle (rounding, arc) (1-pixel width)
 //==============================================================================
 void ST7789_DrawCircleHelper(int16_t x0, int16_t y0, int16_t radius, int8_t quadrantMask, uint16_t color)
 {
@@ -1941,7 +1941,7 @@ void ST7789_DrawCircleHelper(int16_t x0, int16_t y0, int16_t radius, int8_t quad
 //==============================================================================		
 
 //==============================================================================
-// Процедура рисования прямоугольник с закругленніми краями ( пустотелый )
+// Procedure for drawing a rounded rectangle (outline)
 //==============================================================================
 void ST7789_DrawRoundRect(int16_t x, int16_t y, uint16_t width, uint16_t height, int16_t cornerRadius, uint16_t color) {
 	
@@ -1964,7 +1964,7 @@ void ST7789_DrawRoundRect(int16_t x, int16_t y, uint16_t width, uint16_t height,
 //==============================================================================
 
 //==============================================================================
-// Процедура рисования линия толстая ( последний параметр толщина )
+// Procedure for drawing a thick line (last parameter is thickness)
 //==============================================================================
 void ST7789_DrawLineThick(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color, uint8_t thick) {
 	const int16_t deltaX = abs(x2 - x1);
@@ -2004,7 +2004,7 @@ void ST7789_DrawLineThick(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16
 
 
 //==============================================================================
-// линия толстая нужной длины и указаным углом поворота (0-360) ( последний параметр толшина )
+// thick line of the required length and specified rotation angle (0-360) (last parameter is thickness)
 //==============================================================================
 void ST7789_DrawLineThickWithAngle(int16_t x, int16_t y, int16_t length, double angle_degrees, uint16_t color, uint8_t thick) {
     double angleRad = (360.0 - angle_degrees) * PI / 180.0;
@@ -2017,14 +2017,14 @@ void ST7789_DrawLineThickWithAngle(int16_t x, int16_t y, int16_t length, double 
 
 
 //==============================================================================
-// Процедура рисования дуга толстая ( часть круга )
+// Procedure for drawing a thick arc (part of a circle)
 //==============================================================================
 void ST7789_DrawArc(int16_t x0, int16_t y0, int16_t radius, int16_t startAngle, int16_t endAngle, uint16_t color, uint8_t thick) {
 	
     int16_t xLast = -1, yLast = -1;
 
     if (startAngle > endAngle) {
-        // Рисование первой части дуги от startAngle до 360 градусов
+        // Draw the first part of the arc from startAngle to 360 degrees
         for (int16_t angle = startAngle; angle <= 360; angle += 2) {
             float angleRad = (float)(360 - angle) * PI / 180;
             int x = cos(angleRad) * radius + x0;
@@ -2042,7 +2042,7 @@ void ST7789_DrawArc(int16_t x0, int16_t y0, int16_t radius, int16_t startAngle, 
             yLast = y;
         }
 
-        // Рисование второй части дуги от 0 до endAngle
+        // Draw the second part of the arc from 0 to endAngle
         for (int16_t angle = 0; angle <= endAngle; angle += 2) {
             float angleRad = (float)(360 - angle) * PI / 180;
             int x = cos(angleRad) * radius + x0;
@@ -2060,7 +2060,7 @@ void ST7789_DrawArc(int16_t x0, int16_t y0, int16_t radius, int16_t startAngle, 
             yLast = y;
         }
     } else {
-        // Рисование дуги от startAngle до endAngle
+        // Draw the arc from startAngle to endAngle
         for (int16_t angle = startAngle; angle <= endAngle; angle += 2) {
             float angleRad = (float)(360 - angle) * PI / 180;
             int x = cos(angleRad) * radius + x0;
@@ -2084,7 +2084,7 @@ void ST7789_DrawArc(int16_t x0, int16_t y0, int16_t radius, int16_t startAngle, 
 
 #if FRAME_BUFFER
 	//==============================================================================
-	// Процедура вывода буффера кадра на дисплей
+	// Procedure for outputting the frame buffer to the display
 	//==============================================================================
 	void ST7789_Update(void){
 		
@@ -2099,7 +2099,7 @@ void ST7789_DrawArc(int16_t x0, int16_t y0, int16_t radius, int16_t startAngle, 
 	//==============================================================================
 	
 	//==============================================================================
-	// Процедура очистка только буфера кадра  ( при етом сам экран не очищаеться )
+	// Procedure for clearing only the frame buffer (the screen itself is not cleared)
 	//==============================================================================
 	void ST7789_ClearFrameBuffer(void){
 		memset((uint8_t*)buff_frame, 0x00, ST7789_Width*ST7789_Height*sizeof(uint16_t) );

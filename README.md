@@ -1,16 +1,16 @@
 # STM32_Lib_TFT_ST7789
-STM32 Display ST7789  135x240  240x240  172x320  240x280  240x320 76x284
+STM32 Display ST7789  (135x240  240x240  172x320  240x280  240x320 76x284)
 
-Данная библиотека для работы с дисплеем ST7789 ( ST7789V ).
+This library is designed for the display ST7789 ( ST7789V ).
 
-Работает с разрешением экрана 135x240  240x240  172x320  240x280  240x320  76x284
+It supports screen resolutions of 135x240, 240x240, 172x320, 240x280, 240x320, and 76x284.
 
-Данная библиотека поддерживает кириллицу.
+This library supports Cyrillic characters.
 
-Конфигурация в файле st7789.h
+Configuration is handled in the `st7789.h` file.
 
-Инициализация и примеры работы в файле example.txt
+Initialization and usage examples are provided in `example.txt`.
 
-IMG_to_HEX_converter.py - конвертор цветного изображения в массив.
+`IMG_to_HEX_converter.py` is a tool for converting color images into arrays.
 
-По всем вопросам пишите: golinskiy.konstantin@gmail.com
+For any questions, please email: golinskiy.konstantin@gmail.com

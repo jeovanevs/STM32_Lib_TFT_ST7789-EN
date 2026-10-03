@@ -1,9 +1,9 @@
 /*
   ******************************************************************************
-  * @file 			( фаил ):   ST7789.h
-  * @brief 		( описание ):  	
+  * @file 			( file ):   ST7789.h
+  * @brief 		( description ):  	
   ******************************************************************************
-  * @attention 	( внимание ):	 author: Golinskiy Konstantin	e-mail: golinskiy.konstantin@gmail.com
+  * @attention 	( attention ):	 author: Golinskiy Konstantin	e-mail: golinskiy.konstantin@gmail.com
   ******************************************************************************
   
  */
@@ -18,8 +18,8 @@
 extern C {
 #endif
 
-// Обязательно нужен #include "main.h" 
-// чтоб отдельно не подключать файлы связанные с МК и стандартными библиотеками
+// A #include "main.h" is required
+// to avoid separately including MCU-related and standard library files
 
 #include "main.h"
 #include "fonts.h"
@@ -32,33 +32,33 @@ extern C {
 
 //#######  SETUP  ##############################################################################################
 		
-		//==== выбераем через что будем отправлять через HAL или CMSIS(быстрее) ==================
-		//-- нужное оставляем другое коментируем ( важно должно быть только один выбран )---------
+		//==== choose whether to send data via HAL or CMSIS (faster) ==================
+		//-- keep the one you need and comment out the other (only one should be selected)---------
 		
-			// указываем порт SPI для CMSIS ( быстро )-------
-			// так как у разных МК разные регистры то в функциях корректируем под свой МК
-			// на данный момент есть реализация на серию F1 F4 H7 для выбора серии в функциях
+			// specify the SPI port for CMSIS (fast) -------
+			// because different MCUs have different registers, adjust them in the functions for your MCU
+			// currently there is an implementation for F1/F4/H7 series; select the series in the functions
 			//	void ST7789_SendCmd(uint8_t Cmd);
 			//	void ST7789_SendData(uint8_t Data );
 			//	void ST7789_SendDataMASS(uint8_t* buff, size_t buff_size);	
-			// комментируем и раскомментируем то что нам нужно, также там же редактируем под свой МК если не работает
+			// comment/uncomment the one you need, and also edit it for your MCU if it does not work
 			//#define 	ST7789_SPI_CMSIS 	SPI2
 			//-----------------------------------------------
 			
-			// указываем порт SPI для HAL ( медлено )--------
+			// specify the SPI port for HAL (slower) --------
 			#define 	ST7789_SPI_HAL 		hspi1
 			//-----------------------------------------------
 			
 		//============================================================================
 			
-			// выбираем как выводить информацию через буфер кадра или попиксельно ( 1-буфер кадра, 0-попиксельный вывод ) -----
-			// через буфер быстре если много информации обнавлять за один раз ( требует много оперативки для массива )
-			// по пиксельно рисует онлайн буз буферра если информация обновляеться немного то выгодно испотзовать данный режим
+			// choose whether to output information via frame buffer or pixel-by-pixel (1 = frame buffer, 0 = pixel-by-pixel output) -----
+			// frame-buffer mode is faster for large updates but requires more RAM for the array
+			// pixel-by-pixel mode draws online without a buffer; it is preferable when updates are small
 			#define FRAME_BUFFER				0
 			//-----------------------------------------------------------------------------------------------------------------
 			
 			
-		//=== указываем порты ( если в кубе назвали их DC RES CS то тогда нечего указывать не нужно )
+		//=== set the ports (if they are named DC, RES, CS in CubeMX, no additional definitions are required) 
 		#if defined (DC_GPIO_Port)
 		#else
 			#define DC_GPIO_Port	GPIOC
@@ -71,8 +71,8 @@ extern C {
 			#define RST_Pin			GPIO_PIN_14
 		#endif
 		
-		//--  Cесли используем порт CS для выбора устройства тогда раскомментировать ------------
-		// если у нас одно устройство лучше пин CS притянуть к земле( или на порту подать GND )
+		//-- if we use a CS port to select the device, uncomment the following ------------
+		// if there is only one device, it is better to tie the CS pin to GND (or drive it low on the port)
 		
 		#define CS_PORT
 		
@@ -87,8 +87,8 @@ extern C {
 		
 		//=============================================================================
 		
-		//==  выбираем дисплей: =======================================================
-		//-- нужное оставляем другое коментируем ( важно должно быть только один выбран )---------
+		//== choose the display: =======================================================
+		//-- keep the needed one and comment out the others (only one should be selected)---------
 		
 		//#define	ST7789_IS_76X284		// 2.25" 76 x 284 ST7789 
 		//#define	ST7789_IS_135X240		// 1.14" 135 x 240 ST7789 
@@ -115,7 +115,7 @@ extern uint16_t ST7789_Y_Start;
 
 #define PI 	3.14159265
 
-//--- готовые цвета ------------------------------
+//--- ready-made colors ------------------------------
 #define   	ST7789_BLACK   			0x0000
 #define   	ST7789_BLUE    			0x001F
 #define   	ST7789_RED     			0xF800
@@ -126,7 +126,7 @@ extern uint16_t ST7789_Y_Start;
 #define 		ST7789_WHITE   			0xFFFF
 //------------------------------------------------
 
-//-- Битовые маски настройки цветности ST7789 ----
+//-- ST7789 color mode bit masks ----
 #define ST7789_ColorMode_65K    	0x50
 #define ST7789_ColorMode_262K   	0x60
 #define ST7789_ColorMode_12bit  	0x03
@@ -163,9 +163,9 @@ extern uint16_t ST7789_Y_Start;
 #define DELAY 										0x80
 
 
-//###  параметры дисплея 1.3" 240 x 240 ST7789 ###################################
+//###  1.3" 240 x 240 ST7789 display parameters ###################################
 
-	// 1.3" 240 x 240 ST7789  display, default orientation
+	// 1.3" 240 x 240 ST7789 display, default orientation
 
 #ifdef ST7789_IS_240X240
 
@@ -182,9 +182,9 @@ extern uint16_t ST7789_Y_Start;
 
 //##############################################################################
 
-//###  параметры дисплея 2.25" 76 x 284 ST7789 ###################################
+//###  2.25" 76 x 284 ST7789 display parameters ###################################
 
-	// 2.25" 76 x 284 ST7789  display, default orientation
+	// 2.25" 76 x 284 ST7789 display, default orientation
 
 #ifdef ST7789_IS_76X284
 
@@ -201,9 +201,9 @@ extern uint16_t ST7789_Y_Start;
 
 //##############################################################################
 
-//###  параметры дисплея 1.14" 135 x 240 ST7789 ###################################
+//###  1.14" 135 x 240 ST7789 display parameters ###################################
 
-	// 1.14" 135 x 240 ST7789  display, default orientation
+	// 1.14" 135 x 240 ST7789 display, default orientation
 
 #ifdef ST7789_IS_135X240
 
@@ -222,7 +222,7 @@ extern uint16_t ST7789_Y_Start;
 //##############################################################################
 
 
-//###  параметры дисплея 1.47" 172 x 320 ST7789 ###################################
+//###  1.47" 172 x 320 ST7789 display parameters ###################################
 
 	// 1.47" 172 x 320 ST7789 display, default orientation
 		
@@ -243,9 +243,9 @@ extern uint16_t ST7789_Y_Start;
 //##############################################################################
 
 
-//###  параметры дисплея 1.69" 240 x 280 ST7789 ###################################
+//###  1.69" 240 x 280 ST7789 display parameters ###################################
 
-	// 1.69" 240 x 280 ST7789  display, default orientation
+	// 1.69" 240 x 280 ST7789 display, default orientation
 
 #ifdef ST7789_IS_240X280
 
@@ -264,9 +264,9 @@ extern uint16_t ST7789_Y_Start;
 //##############################################################################
 
 
-//###  параметры дисплея 2" 240 x 320 ST7789 ###################################
+//###  2" 240 x 320 ST7789 display parameters ###################################
 
-	// 2" 240 x 320 ST7789  display, default orientation
+	// 2" 240 x 320 ST7789 display, default orientation
 
 #ifdef ST7789_IS_240X320
 

@@ -1,9 +1,9 @@
 /*
   ******************************************************************************
-  * @file 			( фаил ):   fonts.h
-  * @brief 		( описание ):  	
+  * @file 			( file ):   fonts.h
+  * @brief 		( description ):  	
   ******************************************************************************
-  * @attention 	( внимание ):  	author: Golinskiy Konstantin	e-mail: golinskiy.konstantin@gmail.com
+  * @attention 	( attention ):  	author: Golinskiy Konstantin	e-mail: golinskiy.konstantin@gmail.com
   ******************************************************************************
   
  */
@@ -13,13 +13,13 @@
 
 //##############################################################################################################
 
-//---- для экономии памяти шрифты которые не используються закоментировать -------------------------------------
-			// Шрифт имеет кирилицу и латиницу
+//---- to save memory, comment out the fonts you do not use -------------------------------------
+			// The font contains both Cyrillic and Latin characters
 			#define FONT_6x8		//  6 x 8 pixels font size structure 
 			#define FONT_7x9		//  7 x 9 pixels font size structure 
 			#define FONT_11x18		//  11 x 18 pixels font size structure 
 			#define FONT_16x26		//  16 x 26 pixels font size structure 
-			// Только цифры -- only numbers
+			// Numbers only -- only numbers
 			#define FONT_16x28		//  16 x 28 pixels font size structure only numbers	
 //--------------------------------------------------------------------------------------------------------------
 
@@ -38,8 +38,8 @@ extern C {
  * \par Supported fonts
  * 
  */
-// Обязательно нужен #include "main.h" 
-// чтоб отдельно не подключать файлы связанные с МК и стандартными библиотеками
+// A #include "main.h" is required
+// to avoid separately including MCU-related and standard library files
 #include "main.h"
 
 #include "string.h"
@@ -110,7 +110,7 @@ extern FontDef_t Font_16x26;
  * @brief  16 x 28 pixels font size structure only numbers
  */
  #ifdef	FONT_16x28
-// Только цифры -- only numbers
+// Numbers only -- only numbers
 extern FontDef_t Font_16x28;
 #endif
 

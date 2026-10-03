@@ -1,23 +1,23 @@
 /*
 
   ******************************************************************************
-  * @file 			( фаил ):   analog_scale.h
-  * @brief 		( описание ):  	
+  * @file 			( file ):   analog_scale.h
+  * @brief 		( description ):  	
   ******************************************************************************
-  * @attention 	( внимание ):  	author: Golinskiy Konstantin	e-mail: golinskiy.konstantin@gmail.com
+  * @attention 	( attention ):  	author: Golinskiy Konstantin	e-mail: golinskiy.konstantin@gmail.com
   ******************************************************************************
   
-  для работы подключаем в проект #include "analog_scale.h"
+  to use it in the project, include #include "analog_scale.h"
   
-  ///////////  рисуем циферблат в виде окружности   //////////////////////////
+  ///////////  draw the dial as a circle   //////////////////////////
 	
-	 analogMeter(); // рисуем интерфейс циферблата ( 1 раз при старте )
+	 analogMeter(); // draw the dial interface (once at startup)
 	 
 	 HAL_Delay (1500);
 	 
-	 // вызываем функцию plotNeedle(); 
-	 // передаем 1 параметр само значение от 0 до 100
-	 // передаем 2 параметр задержку ( задержку можно ставить 0 тогда ее делать отдельно )
+	 // call plotNeedle();
+	 // first parameter is the actual value from 0 to 100
+	 // second parameter is the delay (you can set it to 0 and handle the delay separately)
 	 for( int i = 0; i<100; i++){
 		 plotNeedle(i, 0);
 		 HAL_Delay (10);
@@ -30,20 +30,20 @@
 	//////////////////////////////////////////////////////////////////////////
 	
 	
-		////  рисуем продолговатые от1 до 6 индикаторы //////////////////////////////////////////////////////////////////////////////
+		////  draw elongated indicators from 1 to 6 //////////////////////////////////////////////////////////////////////////////
 		
-	 uint8_t d = 40;	// смещение каждого нового циферблата на 40 пикселей по координате х
-	 plotLinear("A1", d*0, 10 );	// создаем и проресовываем 1 раз при старте циферблат с названием "A1" смещаем его по х на d*0 и по у на 10
-	 plotLinear("A2", d*1, 10 );	// создаем и проресовываем 1 раз при старте циферблат с названием "A2" смещаем его по х на d*1 и по у на 10
-	 plotLinear("A3", d*2, 10 );	// создаем и проресовываем 1 раз при старте циферблат с названием "A3" смещаем его по х на d*2 и по у на 10
-	 plotLinear("A4", d*3, 10 );	// создаем и проресовываем 1 раз при старте циферблат с названием "A4" смещаем его по х на d*3 и по у на 10
-	 plotLinear("A5", d*4, 10 );	// создаем и проресовываем 1 раз при старте циферблат с названием "A5" смещаем его по х на d*4 и по у на 10
-	 plotLinear("A6", d*5, 10 );	// создаем и проресовываем 1 раз при старте циферблат с названием "A6" смещаем его по х на d*5 и по у на 10
-	 // также при смещении по у или х ( для первого значения ) устанавливаем смещение и кол-во циферблатов в функции void plotPointer(void)
-			 //int x = 0;	// устанавливаем смещение начального индикатора относительно х
-			 //int y = 10; // устанавливаем смещение начального индикатора относительно у
-			 //int count = 6; // устанавливаем кол-во индикаторов от 1 до 6
-			 // далее заполняем массив value[] данными и потом выводим их на дисплей командой plotPointer();
+	 uint8_t d = 40;	// offset of each new dial by 40 pixels on the x axis
+	 plotLinear("A1", d*0, 10 );	// create and draw the dial once at startup with the name "A1" and shift it by d*0 on x and 10 on y
+	 plotLinear("A2", d*1, 10 );	// create and draw the dial once at startup with the name "A2" and shift it by d*1 on x and 10 on y
+	 plotLinear("A3", d*2, 10 );	// create and draw the dial once at startup with the name "A3" and shift it by d*2 on x and 10 on y
+	 plotLinear("A4", d*3, 10 );	// create and draw the dial once at startup with the name "A4" and shift it by d*3 on x and 10 on y
+	 plotLinear("A5", d*4, 10 );	// create and draw the dial once at startup with the name "A5" and shift it by d*4 on x and 10 on y
+	 plotLinear("A6", d*5, 10 );	// create and draw the dial once at startup with the name "A6" and shift it by d*5 on x and 10 on y
+	 // also, when shifting by x or y (for the first value), set the offset and the number of dials in the function void plotPointer(void)
+			 //int x = 0;	// set the offset of the starting indicator relative to x
+			 //int y = 10; // set the offset of the starting indicator relative to y
+			 //int count = 6; // set the number of indicators from 1 to 6
+			 // then fill the value[] array with data and display it on the screen via plotPointer();
 			 
 	 for( int i = 0; i<101; i++){
 		 value[0] = i;
@@ -71,35 +71,35 @@ extern "C" {
 
 /* Includes ----------------------------------------------------------*/
 
-// Обязательно нужен #include "main.h" 
-// чтоб отдельно не подключать файлы связанные с МК и стандартными библиотеками
+// A #include "main.h" is required
+// to avoid separately including MCU-related and standard library files
 #include "main.h"
 
 extern int value[6];
 
 // #########################################################################
-// Обновление данных стрелки и значения на цифербладе ( функцию вызываем с задержкой не менее 10 мс )
-// первый параметр передаем наше значение ( от -10 до 110 гнаницы )
-// чтоб попадал в диапазон разметки на циферблате передаем от 0 до 100
-// второй переметр время для следущего обновления, рекомендуеться ставить 0 и делать вызов функции с интервалом не менее 10 мс
+// Update the needle and value on the dial (call this function with a delay of at least 10 ms)
+// the first parameter is our value (from -10 to 110 gauge units)
+// to keep it within the dial scale range, pass from 0 to 100
+// the second parameter is the time until the next update; recommended to set to 0 and call the function at least every 10 ms
 // #########################################################################
 void plotNeedle(int8_t value, uint8_t ms_delay);
 
 // #########################################################################
-// рисуем сам циферблат ( вызываем функцию 1 раз в начале )
+// draw the dial itself (call this function once at startup)
 // #########################################################################
 void analogMeter(void);
 
 // #########################################################################
-//  рисуем вертикальную шкалу ( значение для показа от 0 до 100 )
-//  первый параметр название шкалы ( например "A1" )
-//  второй параметр координата х ( ширина шкалы 40 ) тоесть следующую шкалу рисуем х + 40
-//  третий параметр координата у
+// draw a vertical scale (value range from 0 to 100)
+// first parameter is the scale name (for example, "A1")
+// second parameter is the x coordinate (scale width is 40, so the next scale is drawn at x + 40)
+// third parameter is the y coordinate
 // #########################################################################
 void plotLinear(char *label, int x, int y);
 
 // #########################################################################
-//  функция опрашивает массив с данными и выводит их на экран
+// this function reads the data array and displays it on the screen
 // #########################################################################
 void plotPointer(void);
 
