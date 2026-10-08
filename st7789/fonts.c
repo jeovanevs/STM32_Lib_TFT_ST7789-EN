@@ -183,6 +183,7 @@ const uint16_t Font6x8 [] = {
 0x0000, 0x0000, 0xF000, 0x0800, 0x7800, 0x0800, 0xF000, 0x0000, 	// э
 0x0000, 0x0000, 0x9000, 0xA800, 0xE800, 0xA800, 0x9000, 0x0000, 	// ю		
 0x0000, 0x0000, 0x7800, 0x8800, 0x7800, 0x4800, 0x8800, 0x0000, 	// я	// 255 symbol in ASCII		// 159th element 
+
 //--  end RUS --------------------------------------------------------------
 
 //////////  special characters and characters not included in the table ranges specified above  /////
